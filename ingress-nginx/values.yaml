@@ -1,0 +1,75 @@
+# values.yaml
+namespace:
+  name: ingress-nginx
+
+serviceAccount:
+  controller:
+    name: ingress-nginx
+  admission:
+    name: ingress-nginx-admission
+
+rbac:
+  role:
+    name: ingress-nginx
+  clusterRole:
+    name: ingress-nginx
+  roleBinding:
+    name: ingress-nginx
+  clusterRoleBinding:
+    name: ingress-nginx
+
+configMap:
+  name: ingress-nginx-controller
+  data:
+    "allow-snippet-annotations": "true"
+
+service:
+  controller:
+    name: ingress-nginx-controller
+    type: LoadBalancer
+    loadBalancerIP: "98.70.240.191"
+    ports:
+      http: 80
+      https: 443
+  admission:
+    name: ingress-nginx-controller-admission
+    type: ClusterIP
+    ports:
+      https-webhook: 443
+
+deployment:
+  name: ingress-nginx-controller
+  image:
+    repository: k8s.gcr.io/ingress-nginx/controller
+    tag: v1.12.0
+    pullPolicy: IfNotPresent
+  resources:
+    requests:
+      cpu: "100m"
+      memory: "90Mi"
+  securityContext:
+    runAsUser: 101
+    capabilities:
+      add: ["NET_BIND_SERVICE"]
+      drop: ["ALL"]
+
+job:
+  admission:
+    create:
+      name: ingress-nginx-admission-create
+      image:
+        repository: k8s.gcr.io/ingress-nginx/kube-webhook-certgen
+        tag: v1.1.1
+        pullPolicy: IfNotPresent
+    patch:
+      name: ingress-nginx-admission-patch
+      image:
+        repository: k8s.gcr.io/ingress-nginx/kube-webhook-certgen
+        tag: v1.1.1
+        pullPolicy: IfNotPresent
+
+ingressClass:
+  name: nginx
+
+validatingWebhookConfiguration:
+  name: ingress-nginx-admission
