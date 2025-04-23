@@ -27,7 +27,7 @@ service:
   controller:
     name: ingress-nginx-controller
     type: LoadBalancer
-    loadBalancerIP: "98.70.240.191"
+    loadBalancerIP: "x.x.x.x"
     ports:
       http: 80
       https: 443
